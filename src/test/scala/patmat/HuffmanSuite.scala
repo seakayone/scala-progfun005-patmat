@@ -50,4 +50,7 @@ class HuffmanSuite extends FunSuite {
     }
   }
 
+  test("print"){
+    println(decodedSecret)
+  }
 }
