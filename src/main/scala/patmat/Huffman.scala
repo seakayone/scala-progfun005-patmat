@@ -18,25 +18,26 @@ object Huffman {
    * present in the leaves below it. The weight of a `Fork` node is the sum of the weights of these
    * leaves.
    */
-    abstract class CodeTree
+  abstract class CodeTree
+
   case class Fork(left: CodeTree, right: CodeTree, chars: List[Char], weight: Int) extends CodeTree
+
   case class Leaf(char: Char, weight: Int) extends CodeTree
-  
+
 
   // Part 1: Basics
   def weight(tree: CodeTree): Int = tree match {
-      case Leaf(_, weight) => weight
-      case Fork(left, right, _, _) => weight(left) + weight(right)
+    case Leaf(_, weight) => weight
+    case Fork(left, right, _, _) => weight(left) + weight(right)
   }
 
   def chars(tree: CodeTree): List[Char] = tree match {
-      case Leaf(char, _) => char :: Nil
-      case Fork(left, right, _, _) => chars(left) ::: chars(right)
+    case Leaf(char, _) => char :: Nil
+    case Fork(left, right, _, _) => chars(left) ::: chars(right)
   }
-  
+
   def makeCodeTree(left: CodeTree, right: CodeTree) =
     Fork(left, right, chars(left) ::: chars(right), weight(left) + weight(right))
-
 
 
   // Part 2: Generating Huffman trees
@@ -51,33 +52,33 @@ object Huffman {
    * This function computes for each unique character in the list `chars` the number of
    * times it occurs. For example, the invocation
    *
-   *   times(List('a', 'b', 'a'))
+   * times(List('a', 'b', 'a'))
    *
    * should return the following (the order of the resulting list is not important):
    *
-   *   List(('a', 2), ('b', 1))
+   * List(('a', 2), ('b', 1))
    *
    * The type `List[(Char, Int)]` denotes a list of pairs, where each pair consists of a
    * character and an integer. Pairs can be constructed easily using parentheses:
    *
-   *   val pair: (Char, Int) = ('c', 1)
+   * val pair: (Char, Int) = ('c', 1)
    *
    * In order to access the two elements of a pair, you can use the accessors `_1` and `_2`:
    *
-   *   val theChar = pair._1
-   *   val theInt  = pair._2
+   * val theChar = pair._1
+   * val theInt  = pair._2
    *
    * Another way to deconstruct a pair is using pattern matching:
    *
-   *   pair match {
-   *     case (theChar, theInt) =>
-   *       println("character is: "+ theChar)
-   *       println("integer is  : "+ theInt)
-   *   }
+   * pair match {
+   * case (theChar, theInt) =>
+   * println("character is: "+ theChar)
+   * println("integer is  : "+ theInt)
+   * }
    */
-    def times(chars: List[Char]): List[(Char, Int)] =
-      chars.groupBy(x => x).map( e => (e._1, e._2.size) ).toList
-  
+  def times(chars: List[Char]): List[(Char, Int)] =
+    chars.groupBy(x => x).map(e => (e._1, e._2.size)).toList
+
   /**
    * Returns a list of `Leaf` nodes for a given frequency table `freqs`.
    *
@@ -85,14 +86,15 @@ object Huffman {
    * head of the list should have the smallest weight), where the weight
    * of a leaf is the frequency of the character.
    */
-    def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] =
-      freqs.sortBy(_._2).map(e => Leaf(e._1, e._2))
-  
+  def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] =
+    freqs.sortBy(_._2).map(e => Leaf(e._1, e._2))
+
   /**
    * Checks whether the list `trees` contains only one single code tree.
    */
-    def singleton(trees: List[CodeTree]): Boolean = ???
-  
+  def singleton(trees: List[CodeTree]): Boolean =
+    trees.size == 1
+
   /**
    * The parameter `trees` of this function is a list of code trees ordered
    * by ascending weights.
@@ -105,7 +107,10 @@ object Huffman {
    * If `trees` is a list of less than two elements, that list should be returned
    * unchanged.
    */
-    def combine(trees: List[CodeTree]): List[CodeTree] = ???
+  def combine(trees: List[CodeTree]): List[CodeTree] = trees match {
+      case first :: second :: any => (makeCodeTree(first, second) :: any).sortBy(weight(_))
+      case _ => trees
+  }
   
   /**
    * This function will be called in the following way:
